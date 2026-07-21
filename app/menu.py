@@ -1,5 +1,5 @@
 import os
-
+from app.compressor import get_video_path
 
 def show_menu():
     while True:
@@ -20,7 +20,9 @@ def show_menu():
             break
 
         elif choice == "1":
-            print("\nSingle Video Compression is coming soon!\n")
+            print()
+            get_video_path()
+            print()
 
         elif choice == "2":
             print("\nBatch Compression is coming soon!\n")
