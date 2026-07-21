@@ -1,6 +1,7 @@
 import os
 
 from app.compressor import (
+    build_ffmpeg_command,
     confirm_video,
     display_video_info,
     get_video_path,
@@ -37,7 +38,22 @@ def show_menu():
                     preset = select_compression_preset()
                 
                 if preset:
-                    print(f"\nSelected preset: {preset.title()}\n")
+                    print()
+                    print("Compression Settings")
+                    print("--------------------")
+                    print(f"Preset : {preset['name']}")
+                    print(f"CRF    : {preset['crf']}")
+                    print(f"Speed  : {preset['speed']}")
+                    print()
+
+                    command, output_path = build_ffmpeg_command(video, preset)
+                    
+                    print("FFmpeg Command")
+                    print("--------------")
+                    print(" ".join(command))
+                    print()
+                    print(f"Output file: {output_path}")
+                    print()
                 else:
                     print("\nCompression cancelled.\n")
             else:

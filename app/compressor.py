@@ -2,6 +2,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from app.presets import COMPRESSION_PRESETS
+
 
 SUPPORTED_EXTENSIONS = {
     ".mp4",
@@ -120,19 +122,45 @@ def select_compression_preset():
     print("[0] Cancel")
     print()
 
+    preset_choices = {
+        "1": "light",
+        "2": "balanced",
+        "3": "maximum",
+    }
+
     while True:
         choice = input("Select a preset: ").strip()
-
-        if choice == "1":
-            return "light"
-
-        if choice == "2":
-            return "balanced"
-
-        if choice == "3":
-            return "maximum"
 
         if choice == "0":
             return None
 
+        preset_key = preset_choices.get(choice)
+
+        if preset_key:
+            return COMPRESSION_PRESETS[preset_key]
+
         print("\nInvalid option. Please enter 1, 2, 3, or 0.\n")
+
+def build_ffmpeg_command(input_path, preset):
+    output_path = input_path.with_name(
+        f"{input_path.stem}_compressed.mp4"
+    )
+
+    command = [
+        "ffmpeg",
+        "-i",
+        str(input_path),
+        "-c:v",
+        "libx264",
+        "-crf",
+        str(preset["crf"]),
+        "-preset",
+        preset["speed"],
+        "-c:a",
+        "aac",
+        "-b:a",
+        "128k",
+        str(output_path),
+    ]
+
+    return command, output_path
