@@ -141,10 +141,23 @@ def select_compression_preset():
 
         print("\nInvalid option. Please enter 1, 2, 3, or 0.\n")
 
-def build_ffmpeg_command(input_path, preset):
+def get_available_output_path(input_path):
     output_path = input_path.with_name(
         f"{input_path.stem}_compressed.mp4"
     )
+
+    counter = 1
+
+    while output_path.exists():
+        output_path = input_path.with_name(
+            f"{input_path.stem}_compressed_{counter}.mp4"
+        )
+        counter += 1
+
+    return output_path
+
+def build_ffmpeg_command(input_path, preset):
+    output_path = get_available_output_path(input_path)
 
     command = [
         "ffmpeg",
