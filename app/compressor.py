@@ -1,11 +1,12 @@
 import json
 import subprocess
 from pathlib import Path
+from tkinter import Tk, filedialog
 
 from app.presets import COMPRESSION_PRESETS
 
 
-SUPPORTED_EXTENSIONS = {
+SUPPORTED_VIDEO_EXTENSIONS = {
     ".mp4",
     ".mkv",
     ".mov",
@@ -28,7 +29,7 @@ def get_video_path():
         print("\n❌ File not found.")
         return None
 
-    if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
+    if path.suffix.lower() not in SUPPORTED_VIDEO_EXTENSIONS:
         print("\n❌ Unsupported video format.")
         return None
 
@@ -317,3 +318,181 @@ def display_compression_results(input_path, output_path):
         print(f"Increase      : {abs(reduction_percentage):.2f}%")
 
     print("─" * 60)
+
+def find_videos_in_folder(folder_path):
+    videos = []
+
+    for item in folder_path.iterdir():
+        if (
+            item.is_file()
+            and item.suffix.lower() in SUPPORTED_VIDEO_EXTENSIONS
+        ):
+            videos.append(item)
+
+    return sorted(
+        videos,
+        key=lambda video: video.name.lower(),
+    )
+
+def display_video_list(videos):
+    print()
+    print(f"Found {len(videos)} video(s):")
+    print("─" * 60)
+
+    for index, video in enumerate(videos, start=1):
+        print(f"{index}. {video.name}")
+
+    print("─" * 60)
+
+def get_video_duration(video_info):
+    def parse_duration(value):
+        if value is None:
+            return None
+
+        try:
+            duration = float(value)
+
+            if duration > 0:
+                return duration
+        except (TypeError, ValueError):
+            pass
+
+        try:
+            hours, minutes, seconds = str(value).split(":")
+
+            duration = (
+                int(hours) * 3600
+                + int(minutes) * 60
+                + float(seconds)
+            )
+
+            if duration > 0:
+                return duration
+        except (TypeError, ValueError):
+            pass
+
+        return None
+
+    format_info = video_info.get("format", {})
+
+    duration = parse_duration(
+        format_info.get("duration")
+    )
+
+    if duration is not None:
+        return duration
+
+    format_tags = format_info.get("tags", {})
+
+    for key, value in format_tags.items():
+        if key.lower() == "duration":
+            duration = parse_duration(value)
+
+            if duration is not None:
+                return duration
+
+    for stream in video_info.get("streams", []):
+        duration = parse_duration(
+            stream.get("duration")
+        )
+
+        if duration is not None:
+            return duration
+
+        duration_ts = stream.get("duration_ts")
+        time_base = stream.get("time_base")
+
+        if duration_ts is not None and time_base:
+            try:
+                numerator, denominator = time_base.split("/")
+
+                duration = (
+                    int(duration_ts)
+                    * int(numerator)
+                    / int(denominator)
+                )
+
+                if duration > 0:
+                    return duration
+            except (TypeError, ValueError, ZeroDivisionError):
+                pass
+
+        stream_tags = stream.get("tags", {})
+
+        for key, value in stream_tags.items():
+            if key.lower() == "duration":
+                duration = parse_duration(value)
+
+                if duration is not None:
+                    return duration
+
+    return None
+
+def compress_video(video, preset):
+    video_info = get_video_info(video)
+    duration = get_video_duration(video_info)
+
+    if duration is None or duration <= 0:
+        print(f"❌ Unable to determine duration: {video.name}")
+        return False
+
+    command, output_path = build_ffmpeg_command(
+        video,
+        preset,
+    )
+
+    success = run_compression(
+        command,
+        duration,
+    )
+
+    if success:
+        display_compression_results(
+            video,
+            output_path,
+        )
+    else:
+        print(f"❌ Compression failed: {video.name}")
+
+    return success
+
+def compress_video_batch(videos, preset):
+    print()
+    print("Starting batch compression...")
+    print()
+
+    succeeded = 0
+    failed = 0
+
+    for index, video in enumerate(videos, start=1):
+        print(f"[{index}/{len(videos)}] {video.name}")
+
+        if compress_video(video, preset):
+            succeeded += 1
+        else:
+            failed += 1
+
+        print()
+
+    print("─" * 60)
+    print("Batch Complete")
+    print("─" * 60)
+    print(f"Videos found : {len(videos)}")
+    print(f"Succeeded    : {succeeded}")
+    print(f"Failed       : {failed}")
+    print("─" * 60)
+
+def select_folder():
+    root = Tk()
+    root.withdraw()
+
+    folder = filedialog.askdirectory(
+        title="Select a folder containing videos"
+    )
+
+    root.destroy()
+
+    if not folder:
+        return None
+
+    return Path(folder)
