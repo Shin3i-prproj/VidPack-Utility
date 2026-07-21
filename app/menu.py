@@ -2,6 +2,7 @@ import os
 
 from app.compressor import (
     build_ffmpeg_command,
+    display_compression_results,
     confirm_video,
     display_video_info,
     get_video_path,
@@ -70,6 +71,12 @@ def show_menu():
                             print()
                             print("Compression completed successfully.")
                             print(f"Saved to: {output_path}")
+
+                            display_compression_results(
+                                video,
+                                output_path,
+                            )
+
                             print()
                         else:
                             print()

@@ -286,3 +286,34 @@ def run_compression(command, duration):
         print("FFmpeg was not found.")
         print("Make sure FFmpeg is installed and added to PATH.")
         return False
+    
+def display_compression_results(input_path, output_path):
+    original_size = input_path.stat().st_size
+    output_size = output_path.stat().st_size
+    saved_size = original_size - output_size
+
+    original_size_mb = original_size / (1024 * 1024)
+    output_size_mb = output_size / (1024 * 1024)
+    saved_size_mb = saved_size / (1024 * 1024)
+
+    if original_size > 0:
+        reduction_percentage = (
+            saved_size / original_size
+        ) * 100
+    else:
+        reduction_percentage = 0
+
+    print()
+    print("Compression Results")
+    print("─" * 60)
+    print(f"Original size : {original_size_mb:.2f} MB")
+    print(f"Output size   : {output_size_mb:.2f} MB")
+
+    if saved_size >= 0:
+        print(f"Space saved   : {saved_size_mb:.2f} MB")
+        print(f"Reduction     : {reduction_percentage:.2f}%")
+    else:
+        print(f"Size increase : {abs(saved_size_mb):.2f} MB")
+        print(f"Increase      : {abs(reduction_percentage):.2f}%")
+
+    print("─" * 60)
