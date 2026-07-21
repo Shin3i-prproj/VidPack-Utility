@@ -2,6 +2,7 @@ import json
 import subprocess
 from pathlib import Path
 from tkinter import Tk, filedialog
+from app.engine import run_ffmpeg
 
 from app.presets import COMPRESSION_PRESETS
 
@@ -184,13 +185,7 @@ def run_compression(command, duration):
     print()
 
     try:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-        )
+        process = run_ffmpeg(command)
 
         if process.stdout is None:
             print("Unable to read FFmpeg output.")
