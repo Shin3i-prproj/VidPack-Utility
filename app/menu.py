@@ -1,5 +1,12 @@
 import os
-from app.compressor import get_video_path
+
+from app.compressor import (
+    confirm_video,
+    display_video_info,
+    get_video_path,
+    select_compression_preset,
+)
+
 
 def show_menu():
     while True:
@@ -21,7 +28,21 @@ def show_menu():
 
         elif choice == "1":
             print()
-            get_video_path()
+            video = get_video_path()
+
+            if video:
+                display_video_info(video)
+
+                if confirm_video():
+                    preset = select_compression_preset()
+                
+                if preset:
+                    print(f"\nSelected preset: {preset.title()}\n")
+                else:
+                    print("\nCompression cancelled.\n")
+            else:
+                    print("\nCompression cancelled.\n")
+
             print()
 
         elif choice == "2":
