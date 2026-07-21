@@ -1,12 +1,14 @@
 import json
 import subprocess
+
+from json import JSONDecodeError
 from pathlib import Path
 from tkinter import Tk, filedialog
-from app.engine import run_ffmpeg
-from app.engine import run_ffmpeg
-from app.progress import monitor_progress
 
+from app.engine import run_ffmpeg
+from app.exceptions import FFmpegError, FFprobeError
 from app.presets import COMPRESSION_PRESETS
+from app.progress import monitor_progress
 
 
 SUPPORTED_VIDEO_EXTENSIONS = {
@@ -57,7 +59,15 @@ def get_video_info(path: Path):
         text=True,
     )
 
-    return json.loads(result.stdout)
+    if result.returncode != 0:
+        raise FFprobeError(result.stderr.strip())
+
+    try:
+        return json.loads(result.stdout)
+    except JSONDecodeError as error:
+        raise FFprobeError(
+            "FFprobe returned invalid data."
+        ) from error
 
 
 def display_video_info(path):
@@ -194,10 +204,10 @@ def run_compression(command, duration):
             duration,
         )
 
-    except FileNotFoundError:
-        print("FFmpeg was not found.")
-        print("Make sure FFmpeg is installed and added to PATH.")
-        return False
+    except FileNotFoundError as error:
+        raise FFmpegError(
+            "FFmpeg was not found. Make sure FFmpeg is installed and added to PATH."
+        ) from error
     
 def display_compression_results(input_path, output_path):
     original_size = input_path.stat().st_size
@@ -340,7 +350,12 @@ def get_video_duration(video_info):
     return None
 
 def compress_video(video, preset):
-    video_info = get_video_info(video)
+    try:
+        video_info = get_video_info(video)
+    except FFprobeError as error:
+        print(f"\n❌ {error}")
+        return False
+
     duration = get_video_duration(video_info)
 
     if duration is None or duration <= 0:
@@ -352,10 +367,15 @@ def compress_video(video, preset):
         preset,
     )
 
-    success = run_compression(
-        command,
-        duration,
-    )
+    try:
+        success = run_compression(
+            command,
+            duration,
+        )
+
+    except FFmpegError as error:
+        print(f"\n❌ {error}")
+        return False
 
     if success:
         display_compression_results(
