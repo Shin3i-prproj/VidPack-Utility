@@ -41,7 +41,10 @@ def get_video_path():
     return path
 
 
-def get_video_info(path: Path):
+def get_video_info(path: Path) -> dict:
+    """
+    Retrieve video metadata using FFprobe.
+    """
     command = [
         "ffprobe",
         "-v",
@@ -191,7 +194,10 @@ def build_ffmpeg_command(input_path, preset):
 
     return command, output_path
 
-def run_compression(command, duration):
+def run_compression(
+    command: list[str],
+    duration: float,
+) -> bool:
     print()
     print("Starting compression...")
     print()
@@ -265,7 +271,11 @@ def display_video_list(videos):
 
     print("─" * 60)
 
-def get_video_duration(video_info):
+def get_video_duration(video_info: dict) -> float | None:
+    """
+    Extract the video duration in seconds from FFprobe metadata.
+    """
+
     def parse_duration(value):
         if value is None:
             return None
@@ -358,8 +368,12 @@ def compress_video(video, preset):
 
     duration = get_video_duration(video_info)
 
-    if duration is None or duration <= 0:
-        print(f"❌ Unable to determine duration: {video.name}")
+    if duration is None:
+        print("\n❌ Unable to determine the video's duration.")
+        return False
+
+    if duration <= 0:
+        print(f"❌ Invalid duration ({duration}) for: {video.name}")
         return False
 
     command, output_path = build_ffmpeg_command(

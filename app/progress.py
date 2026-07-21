@@ -1,4 +1,10 @@
-def monitor_progress(process, duration):
+import subprocess
+
+
+def monitor_progress(
+    process: subprocess.Popen,
+    duration: float,
+) -> bool:
     if process.stdout is None:
         print("Unable to read FFmpeg output.")
         return False
