@@ -5,6 +5,7 @@ from app.compressor import (
     confirm_video,
     display_video_info,
     get_video_path,
+    run_compression,
     select_compression_preset,
 )
 
@@ -36,27 +37,42 @@ def show_menu():
 
                 if confirm_video():
                     preset = select_compression_preset()
-                
-                if preset:
-                    print()
-                    print("Compression Settings")
-                    print("--------------------")
-                    print(f"Preset : {preset['name']}")
-                    print(f"CRF    : {preset['crf']}")
-                    print(f"Speed  : {preset['speed']}")
-                    print()
 
-                    command, output_path = build_ffmpeg_command(video, preset)
-                    
-                    print("FFmpeg Command")
-                    print("--------------")
-                    print(" ".join(command))
-                    print()
-                    print(f"Output file: {output_path}")
-                    print()
+                    if preset:
+                        print()
+                        print("Compression Settings")
+                        print("--------------------")
+                        print(f"Preset : {preset['name']}")
+                        print(f"CRF    : {preset['crf']}")
+                        print(f"Speed  : {preset['speed']}")
+                        print()
+
+                        command, output_path = build_ffmpeg_command(
+                            video,
+                            preset,
+                        )
+
+                        print("FFmpeg Command")
+                        print("--------------")
+                        print(" ".join(command))
+                        print()
+                        print(f"Output file: {output_path}")
+                        print()
+
+                        compression_successful = run_compression(command)
+
+                        if compression_successful:
+                            print()
+                            print("Compression completed successfully.")
+                            print(f"Saved to: {output_path}")
+                            print()
+                        else:
+                            print()
+                            print("Compression was not completed.")
+                            print()
+                    else:
+                        print("\nCompression cancelled.\n")
                 else:
-                    print("\nCompression cancelled.\n")
-            else:
                     print("\nCompression cancelled.\n")
 
             print()

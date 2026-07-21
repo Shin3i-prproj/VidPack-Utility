@@ -164,3 +164,21 @@ def build_ffmpeg_command(input_path, preset):
     ]
 
     return command, output_path
+
+def run_compression(command):
+    print()
+    print("Starting compression...")
+    print()
+
+    try:
+        subprocess.run(command, check=True)
+        return True
+
+    except FileNotFoundError:
+        print("FFmpeg was not found.")
+        print("Make sure FFmpeg is installed and added to PATH.")
+        return False
+
+    except subprocess.CalledProcessError:
+        print("Compression failed while FFmpeg was running.")
+        return False
