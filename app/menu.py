@@ -33,7 +33,7 @@ def show_menu():
             video = get_video_path()
 
             if video:
-                display_video_info(video)
+                video_info = display_video_info(video)
 
                 if confirm_video():
                     preset = select_compression_preset()
@@ -59,7 +59,12 @@ def show_menu():
                         print(f"Output file: {output_path}")
                         print()
 
-                        compression_successful = run_compression(command)
+                        duration = float(video_info["format"]["duration"])
+
+                        compression_successful = run_compression(
+                            command,
+                            duration,
+                        )
 
                         if compression_successful:
                             print()

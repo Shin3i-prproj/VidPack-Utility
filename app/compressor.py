@@ -56,42 +56,36 @@ def get_video_info(path: Path):
     return json.loads(result.stdout)
 
 
-def display_video_info(path: Path):
+def display_video_info(path):
     info = get_video_info(path)
 
-    format_info = info.get("format", {})
-    streams = info.get("streams", [])
+    format_info = info["format"]
 
     video_stream = next(
-        (
-            stream
-            for stream in streams
-            if stream.get("codec_type") == "video"
-        ),
-        {},
+        stream
+        for stream in info["streams"]
+        if stream["codec_type"] == "video"
     )
 
     filename = path.name
+    size = int(format_info["size"])
+    duration = float(format_info["duration"])
+    width = video_stream["width"]
+    height = video_stream["height"]
 
-    size_bytes = int(format_info.get("size", 0))
-    size_mb = size_bytes / (1024 * 1024)
-
-    duration = float(format_info.get("duration", 0))
     minutes = int(duration // 60)
     seconds = int(duration % 60)
 
-    width = video_stream.get("width", "?")
-    height = video_stream.get("height", "?")
-
-    print()
     print("─" * 60)
     print("Video Information")
     print("─" * 60)
     print(f"Filename   : {filename}")
-    print(f"Size       : {size_mb:.2f} MB")
+    print(f"Size       : {size / (1024 * 1024):.2f} MB")
     print(f"Duration   : {minutes}m {seconds}s")
     print(f"Resolution : {width} x {height}")
     print("─" * 60)
+
+    return info
 
 
 def confirm_video():
@@ -163,6 +157,11 @@ def build_ffmpeg_command(input_path, preset):
         "ffmpeg",
         "-i",
         str(input_path),
+
+        "-progress",
+        "pipe:1",
+        "-nostats",
+
         "-c:v",
         "libx264",
         "-crf",
@@ -178,20 +177,112 @@ def build_ffmpeg_command(input_path, preset):
 
     return command, output_path
 
-def run_compression(command):
+def run_compression(command, duration):
     print()
     print("Starting compression...")
     print()
 
     try:
-        subprocess.run(command, check=True)
-        return True
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+        )
+
+        if process.stdout is None:
+            print("Unable to read FFmpeg output.")
+            return False
+
+        progress_data = {
+            "frame": "0",
+            "fps": "0",
+            "out_time_ms": "0",
+            "speed": "0x",
+        }
+
+        for line in process.stdout:
+            line = line.strip()
+
+            if "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+
+            if key in progress_data:
+                progress_data[key] = value
+
+            if key == "progress":
+                out_time_value = progress_data["out_time_ms"]
+
+                if out_time_value == "N/A":
+                    continue
+
+                try:
+                    out_time_seconds = int(out_time_value) / 1_000_000
+                except ValueError:
+                    continue
+
+                percentage = min(
+                    (out_time_seconds / duration) * 100,
+                    100,
+                )
+
+                speed_text = progress_data["speed"]
+
+                try:
+                    speed = float(speed_text.rstrip("x"))
+                except ValueError:
+                    speed = 1.0
+
+                remaining_seconds = max(duration - out_time_seconds, 0)
+
+                if speed > 0:
+                    eta_seconds = int(remaining_seconds / speed)
+                else:
+                    eta_seconds = 0
+
+                eta_minutes = eta_seconds // 60
+                eta_secs = eta_seconds % 60
+
+                eta = f"{eta_minutes:02}:{eta_secs:02}"
+
+                bar_length = 30
+                filled_length = int(bar_length * percentage / 100)
+
+                progress_bar = (
+                    "█" * filled_length
+                    + "-" * (bar_length - filled_length)
+                )
+
+                if value == "end":
+                    percentage = 100.0
+
+                    filled_length = bar_length
+                    progress_bar = "█" * bar_length
+                    eta = "00:00"
+
+                status_line = (
+                    f"[{progress_bar}] "
+                    f"{percentage:6.2f}% | "
+                    f"ETA: {eta} | "
+                    f"Frame: {progress_data['frame']} | "
+                    f"Speed: {progress_data['speed']}"
+                )
+
+                print(
+                    f"\r{status_line:<100}",
+                    end="",
+                    flush=True,
+                )
+
+        process.wait()
+        print()
+
+        return process.returncode == 0
 
     except FileNotFoundError:
         print("FFmpeg was not found.")
         print("Make sure FFmpeg is installed and added to PATH.")
-        return False
-
-    except subprocess.CalledProcessError:
-        print("Compression failed while FFmpeg was running.")
         return False
