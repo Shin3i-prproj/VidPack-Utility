@@ -184,17 +184,3 @@ MIT License
 Shin
 
 ---
-
-## 🚀 Roadmap
-
-### v1.1
-
-- Custom CRF
-- Hardware acceleration
-- Additional output formats
-
-### v2.0
-
-- GUI
-- User-defined presets
-- Drag-and-drop support
