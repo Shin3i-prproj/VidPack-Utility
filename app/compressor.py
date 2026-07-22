@@ -2,7 +2,7 @@ import json
 import subprocess
 
 from json import JSONDecodeError
-from pathlib import Path
+
 from tkinter import Tk, filedialog
 
 from app.engine import run_ffmpeg
@@ -123,16 +123,15 @@ def confirm_video():
 
         print("\nInvalid option. Please enter 1 or 0.\n")
 
-def select_compression_preset():
-    print()
-    print("Choose Compression Preset")
-    print()
-    print("[1] Light Compression")
-    print("[2] Balanced Compression")
-    print("[3] Maximum Compression")
-    print()
-    print("[0] Cancel")
-    print()
+def select_compression_preset() -> dict | None:
+    """
+    Ask the user to select a compression preset.
+
+    Pressing Enter reuses the last valid preset.
+    """
+
+    config = load_config()
+    last_preset_name = config.get("last_preset")
 
     preset_choices = {
         "1": "light",
@@ -140,8 +139,42 @@ def select_compression_preset():
         "3": "maximum",
     }
 
+    preset_names = {
+        preset["name"]: preset
+        for preset in COMPRESSION_PRESETS.values()
+    }
+
+    last_preset = preset_names.get(last_preset_name)
+
+    print()
+    print("Choose Compression Preset")
+    print()
+
+    if last_preset:
+        print(f"⭐ Last used: {last_preset_name}")
+        print()
+
+    print("[1] Light Compression")
+    print("[2] Balanced Compression")
+    print("[3] Maximum Compression")
+    print()
+
+    if last_preset:
+        print("Press Enter to use the last preset.")
+
+    print("[0] Cancel")
+    print()
+
     while True:
         choice = input("Select a preset: ").strip()
+
+        if choice == "":
+            if last_preset:
+                print(f"\n⭐ Using last preset: {last_preset_name}\n")
+                return last_preset
+
+            print("\nNo previous preset is available.\n")
+            continue
 
         if choice == "0":
             return None
@@ -153,15 +186,76 @@ def select_compression_preset():
 
         print("\nInvalid option. Please enter 1, 2, 3, or 0.\n")
 
-def get_available_output_path(input_path):
-    output_path = input_path.with_name(
+def select_output_folder() -> Path:
+    """
+    Ask the user to choose an output folder.
+
+    Pressing Enter reuses the last valid output folder.
+    """
+
+    config = load_config()
+    last_output_folder = config.get("last_output_folder")
+
+    saved_output_folder = None
+
+    if last_output_folder:
+        candidate_folder = Path(last_output_folder)
+
+        if candidate_folder.exists() and candidate_folder.is_dir():
+            saved_output_folder = candidate_folder
+
+    print()
+    print("Output Folder")
+    print()
+
+    if saved_output_folder:
+        print("⭐ Last used:")
+        print(saved_output_folder)
+        print()
+        print("Press Enter to use the last folder.")
+        print()
+
+    while True:
+        folder_input = input("Enter output folder: ").strip()
+
+        if folder_input == "":
+            if saved_output_folder:
+                print(
+                    f"\n⭐ Using last output folder: "
+                    f"{saved_output_folder}\n"
+                )
+                return saved_output_folder
+
+            print("\nPlease enter an output folder.\n")
+            continue
+
+        output_folder = Path(folder_input).expanduser()
+
+        if not output_folder.exists():
+            print("\nThat folder does not exist.\n")
+            continue
+
+        if not output_folder.is_dir():
+            print("\nThe selected path is not a folder.\n")
+            continue
+
+        config["last_output_folder"] = str(output_folder)
+        save_config(config)
+
+        return output_folder
+
+def get_available_output_path(
+    input_path: Path,
+    output_folder: Path,
+) -> Path:
+    output_path = output_folder / (
         f"{input_path.stem}_compressed.mp4"
     )
 
     counter = 1
 
     while output_path.exists():
-        output_path = input_path.with_name(
+        output_path = output_folder / (
             f"{input_path.stem}_compressed_{counter}.mp4"
         )
         counter += 1
