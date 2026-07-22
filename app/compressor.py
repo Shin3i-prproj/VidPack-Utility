@@ -42,6 +42,49 @@ def get_video_path():
 
     return path
 
+def get_folder_path() -> Path | None:
+    """
+    Open a folder picker for batch compression.
+    """
+
+    root = Tk()
+    root.withdraw()
+
+    folder = filedialog.askdirectory(
+        title="Select a Folder"
+    )
+
+    root.destroy()
+
+    if not folder:
+        return None
+
+    path = Path(folder)
+
+    if not path.exists():
+        print("\n❌ Folder not found.")
+        return None
+
+    return path
+
+def get_videos_from_folder(folder: Path) -> list[Path]:
+    """
+    Return all supported video files inside a folder.
+
+    Subfolders are not scanned.
+    """
+
+    videos = []
+
+    for item in folder.iterdir():
+        if not item.is_file():
+            continue
+
+        if item.suffix.lower() in SUPPORTED_VIDEO_EXTENSIONS:
+            videos.append(item)
+
+    return sorted(videos)
+
 
 def get_video_info(path: Path) -> dict:
     """
@@ -467,7 +510,12 @@ def get_video_duration(video_info: dict) -> float | None:
 
     return None
 
-def compress_video(video: Path, preset: dict) -> bool:
+def compress_video(
+    video: Path,
+    preset: dict,
+    output_folder: Path | None = None,
+) -> bool:
+    
     try:
         video_info = get_video_info(video)
     except FFprobeError as error:
@@ -483,7 +531,8 @@ def compress_video(video: Path, preset: dict) -> bool:
         print(f"❌ Invalid duration ({duration}) for: {video.name}")
         return False
 
-    output_folder = select_output_folder()
+    if output_folder is None:
+        output_folder = select_output_folder()
 
     command, output_path = build_ffmpeg_command(
         video,
@@ -527,10 +576,15 @@ def compress_video(video: Path, preset: dict) -> bool:
 
     return success
 
-def compress_video_batch(videos, preset):
+def compress_video_batch(
+    videos: list[Path],
+    preset: dict,
+) -> None:
     print()
     print("Starting batch compression...")
     print()
+
+    output_folder = select_output_folder()
 
     succeeded = 0
     failed = 0
@@ -538,7 +592,11 @@ def compress_video_batch(videos, preset):
     for index, video in enumerate(videos, start=1):
         print(f"[{index}/{len(videos)}] {video.name}")
 
-        if compress_video(video, preset):
+        if compress_video(
+            video,
+            preset,
+            output_folder,
+        ):
             succeeded += 1
         else:
             failed += 1
@@ -551,6 +609,7 @@ def compress_video_batch(videos, preset):
     print(f"Videos found : {len(videos)}")
     print(f"Succeeded    : {succeeded}")
     print(f"Failed       : {failed}")
+    print(f"Output folder: {output_folder}")
     print("─" * 60)
 
 def select_folder():
