@@ -1,9 +1,27 @@
-# 🎬 VidPack Utility
+<p align="center">
+  <img src="assets/logo.png" alt="VidPack Utility Logo" width="220">
+</p>
+
+<p align="center">
+  <img src="assets/banner.png" alt="VidPack Utility Banner">
+</p>
+
+<p align="center">
+  <img src="assets/logo.png" alt="VidPack Utility Logo" width="220">
+</p>
+
+<p align="center">
+<b>Fast • Clean • Powerful</b>
+</p>
+
+<p align="center">
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Version](https://img.shields.io/badge/Version-1.0.0-orange)
+
+</p>
 
 **Fast • Clean • Powerful**
 
