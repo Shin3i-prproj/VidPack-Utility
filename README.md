@@ -59,7 +59,13 @@ VidPack Utility supports any video format that FFmpeg can read, including:
 
 ## 📷 Preview
 
-*(We'll add screenshots or a GIF later.)*
+### Main Menu
+
+![Main Menu](assets/main-menu.png)
+
+### Compression Progress
+
+![Compression Progress](assets/progress.png)
 
 ---
 
