@@ -1,11 +1,17 @@
 import json
+import sys
 
 from pathlib import Path
 
 from app.utils import clear_screen
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if getattr(sys, "frozen", False):
+    PROJECT_ROOT = Path(sys.executable).resolve().parent
+else:
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
 CONFIG_PATH = PROJECT_ROOT / "config.json"
 LOGS_PATH = PROJECT_ROOT / "logs"
 

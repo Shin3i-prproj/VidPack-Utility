@@ -1,4 +1,6 @@
 from app.utils import clear_screen
+from app.version import VERSION
+
 
 def show_about() -> None:
     """
@@ -14,9 +16,9 @@ def show_about() -> None:
     print()
     print("Version")
     print("-------")
-    print("v1.0.0")
+    print(VERSION)
     print()
-    print("Developer")
+    print("Author")
     print("---------")
     print("Shin")
     print()

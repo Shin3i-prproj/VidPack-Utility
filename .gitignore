@@ -34,3 +34,9 @@ config.json
 
 # Windows
 Thumbs.db
+
+logs/*
+!logs/.gitkeep
+
+output/*
+!output/.gitkeep

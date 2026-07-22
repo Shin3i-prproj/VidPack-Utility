@@ -1,7 +1,7 @@
 import subprocess
 
 
-def run_ffmpeg(command: list[str]) -> subprocess.Popen:
+def run_ffmpeg(command: list[str]) -> subprocess.Popen[str]:
     """
     Start an FFmpeg process and return the running subprocess.
     """

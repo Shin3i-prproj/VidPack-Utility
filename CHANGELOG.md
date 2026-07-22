@@ -1,19 +1,18 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-## [1.0.0] - 2026-07-22
+## [1.0.0] - Initial Release
 
 ### Added
+
 - Single video compression
-- Batch video compression
+- Batch compression
 - Compression presets
-- Output folder selection
-- Compression statistics
+- Live progress bar
+- ETA estimation
 - Compression logs
-- Settings menu
-- About screen
-- ASCII startup banner
+- Configuration system
+- About page
+- Version management
 
 ### Changed
 - Refactored the compression workflow into reusable functions

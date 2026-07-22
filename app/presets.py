@@ -1,4 +1,6 @@
-COMPRESSION_PRESETS = {
+Preset = dict[str, str | int]
+
+COMPRESSION_PRESETS: dict[str, dict[str, str | int]] = {
     "light": {
         "name": "Light Compression",
         "crf": 23,

@@ -1,4 +1,2 @@
 # No external Python packages required.
-# Requires:
-# - Python 3.11+
-# - FFmpeg installed and available in PATH
+# FFmpeg and FFprobe must be installed separately.
