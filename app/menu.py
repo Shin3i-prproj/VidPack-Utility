@@ -75,6 +75,7 @@ def show_menu():
                             display_compression_results(
                                 video,
                                 output_path,
+                                preset,
                             )
 
                             print()

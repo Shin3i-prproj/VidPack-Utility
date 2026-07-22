@@ -9,6 +9,7 @@ from app.engine import run_ffmpeg
 from app.exceptions import FFmpegError, FFprobeError
 from app.presets import COMPRESSION_PRESETS
 from app.progress import monitor_progress
+from app.config import load_config, save_config
 
 
 SUPPORTED_VIDEO_EXTENSIONS = {
@@ -215,7 +216,11 @@ def run_compression(
             "FFmpeg was not found. Make sure FFmpeg is installed and added to PATH."
         ) from error
     
-def display_compression_results(input_path, output_path):
+def display_compression_results(
+    input_path: Path,
+    output_path: Path,
+    preset: dict,
+) -> None:
     original_size = input_path.stat().st_size
     output_size = output_path.stat().st_size
     saved_size = original_size - output_size
@@ -234,6 +239,7 @@ def display_compression_results(input_path, output_path):
     print()
     print("Compression Results")
     print("─" * 60)
+    print(f"Preset        : {preset['name']}")
     print(f"Original size : {original_size_mb:.2f} MB")
     print(f"Output size   : {output_size_mb:.2f} MB")
 
@@ -359,7 +365,7 @@ def get_video_duration(video_info: dict) -> float | None:
 
     return None
 
-def compress_video(video, preset):
+def compress_video(video: Path, preset: dict) -> bool:
     try:
         video_info = get_video_info(video)
     except FFprobeError as error:
@@ -367,7 +373,6 @@ def compress_video(video, preset):
         return False
 
     duration = get_video_duration(video_info)
-
     if duration is None:
         print("\n❌ Unable to determine the video's duration.")
         return False
@@ -380,6 +385,21 @@ def compress_video(video, preset):
         video,
         preset,
     )
+
+    config = load_config()
+    config["last_preset"] = preset["name"]
+
+    saved = save_config(config)
+    reloaded_config = load_config()
+
+    print()
+    print("========== PRESET CONFIG DEBUG ==========")
+    print(f"Compressor file : {Path(__file__).resolve()}")
+    print(f"Preset received : {preset}")
+    print(f"Save successful : {saved}")
+    print(f"Reloaded config : {reloaded_config}")
+    print("=========================================")
+    print()
 
     try:
         success = run_compression(
@@ -395,6 +415,7 @@ def compress_video(video, preset):
         display_compression_results(
             video,
             output_path,
+            preset,
         )
     else:
         print(f"❌ Compression failed: {video.name}")
