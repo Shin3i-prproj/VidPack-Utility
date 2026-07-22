@@ -124,3 +124,69 @@ def display_available_logs(
     print()
     print("[0] Back")
     print()
+
+def display_log_contents(
+    log_path: Path,
+) -> None:
+    """
+    Display the contents of a compression log.
+    """
+
+    print()
+    print("=" * 60)
+
+    try:
+        print(
+            log_path.read_text(
+                encoding="utf-8",
+            )
+        )
+
+    except OSError:
+        print("❌ Unable to read the log file.")
+
+    print("=" * 60)
+
+def view_logs() -> None:
+    """
+    Display and open compression logs.
+    """
+
+    while True:
+        logs = get_available_logs()
+
+        display_available_logs(logs)
+
+        if not logs:
+            try:
+                input("Press Enter to return...")
+            except EOFError:
+                pass
+
+            return
+
+        try:
+            choice = input("> ").strip()
+        except EOFError:
+            print("\nReturning to the previous menu...")
+            return
+
+        if choice == "0":
+            return
+
+        if not choice.isdigit():
+            print("\n❌ Invalid choice.\n")
+            continue
+
+        index = int(choice) - 1
+
+        if not (0 <= index < len(logs)):
+            print("\n❌ Invalid choice.\n")
+            continue
+
+        display_log_contents(logs[index])
+
+        try:
+            input("\nPress Enter to continue...")
+        except EOFError:
+            return
