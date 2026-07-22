@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 
 from app.config import ensure_logs_folder
+from app.utils import clear_screen
 
 
 def save_compression_log(
@@ -132,6 +133,8 @@ def display_log_contents(
     Display the contents of a compression log.
     """
 
+    clear_screen()
+
     print()
     print("=" * 60)
 
@@ -153,6 +156,8 @@ def view_logs() -> None:
     """
 
     while True:
+        clear_screen()
+
         logs = get_available_logs()
 
         display_available_logs(logs)

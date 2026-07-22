@@ -1,7 +1,11 @@
+from app.utils import clear_screen
+
 def show_about() -> None:
     """
     Display information about VidPack Utility.
     """
+
+    clear_screen()
 
     print()
     print("=" * 60)

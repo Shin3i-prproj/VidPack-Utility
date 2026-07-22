@@ -1,6 +1,7 @@
 import json
 
 from pathlib import Path
+from app.utils import clear_screen
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -68,6 +69,8 @@ def show_settings_menu() -> None:
     """
 
     while True:
+        clear_screen()
+        
         config = load_config()
 
         last_preset = config.get(

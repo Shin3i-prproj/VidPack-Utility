@@ -19,10 +19,13 @@ from app.compressor import (
 from app.config import show_settings_menu
 from app.logs import view_logs
 from app.about import show_about
+from app.utils import clear_screen
 
 
 def show_menu():
     while True:
+        clear_screen()
+        
         print("─" * 60)
         print("[1] Compress a Video")
         print("[2] Batch Compress Folder")
