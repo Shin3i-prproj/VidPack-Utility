@@ -1,0 +1,26 @@
+VidPack Compression Log
+=======================
+
+Date:
+2026-07-22 14:05:18
+
+Input:
+test_input.mp4
+
+Output:
+test_output.mp4
+
+Preset:
+Light Compression
+
+Original Size:
+476.84 MB
+
+Compressed Size:
+286.10 MB
+
+Space Saved:
+190.73 MB
+
+Status:
+SUCCESS

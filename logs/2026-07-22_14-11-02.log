@@ -1,0 +1,26 @@
+VidPack Compression Log
+=======================
+
+Date:
+2026-07-22 14:11:02
+
+Input:
+C:\Users\Shin\Downloads\test\test2.mkv
+
+Output:
+C:\Users\Shin\Downloads\test\test2_compressed_1.mp4
+
+Preset:
+Light Compression
+
+Original Size:
+26.07 MB
+
+Compressed Size:
+5.16 MB
+
+Space Saved:
+20.91 MB
+
+Status:
+SUCCESS

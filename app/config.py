@@ -5,6 +5,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = PROJECT_ROOT / "config.json"
+LOGS_PATH = PROJECT_ROOT / "logs"
 
 
 def load_config() -> dict:
@@ -48,6 +49,18 @@ def save_config(config: dict) -> bool:
 
     except OSError:
         return False
+    
+def ensure_logs_folder() -> Path:
+    """
+    Create the logs folder if it does not exist.
+    """
+
+    LOGS_PATH.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    return LOGS_PATH
         
 def show_settings_menu() -> None:
     """

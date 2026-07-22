@@ -1,6 +1,7 @@
 import json
 import subprocess
 
+
 from json import JSONDecodeError
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from app.exceptions import FFmpegError, FFprobeError
 from app.presets import COMPRESSION_PRESETS
 from app.progress import monitor_progress
 from app.config import load_config, save_config
+from app.logs import save_compression_log
 
 
 SUPPORTED_VIDEO_EXTENSIONS = {
@@ -420,6 +422,14 @@ def display_compression_results(
         ) * 100
     else:
         reduction_percentage = 0
+
+    log_path = save_compression_log(
+    input_path=input_path,
+    output_path=output_path,
+    preset_name=preset["name"],
+    original_size=original_size,
+    compressed_size=output_size,
+    )
 
     print()
     print("Compression Results")
