@@ -1,13 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="VidPack Utility Logo" width="220">
-</p>
-
-<p align="center">
-  <img src="assets/banner.png" alt="VidPack Utility Banner">
-</p>
-
-<p align="center">
-  <img src="assets/logo.png" alt="VidPack Utility Logo" width="220">
+  <img src="assets/banner.png" alt="VidPack Utility Banner" width="100%">
 </p>
 
 <p align="center">
