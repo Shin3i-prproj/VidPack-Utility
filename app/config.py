@@ -1,6 +1,7 @@
 import json
 
 from pathlib import Path
+
 from app.utils import clear_screen
 
 
@@ -22,7 +23,12 @@ def load_config() -> dict:
             "r",
             encoding="utf-8",
         ) as config_file:
-            return json.load(config_file)
+            config = json.load(config_file)
+
+        if isinstance(config, dict):
+            return config
+
+        return {}
 
     except (OSError, json.JSONDecodeError):
         return {}
@@ -48,7 +54,8 @@ def save_config(config: dict) -> bool:
 
     except OSError:
         return False
-    
+
+
 def ensure_logs_folder() -> Path:
     """
     Create the logs folder if it does not exist.
@@ -60,7 +67,8 @@ def ensure_logs_folder() -> Path:
     )
 
     return LOGS_PATH
-        
+
+
 def show_settings_menu() -> None:
     """
     Display and manage VidPack configuration settings.
@@ -121,7 +129,6 @@ def show_settings_menu() -> None:
                     print("\n✅ All settings reset.\n")
                 else:
                     print("\n❌ Unable to reset settings.\n")
-
             else:
                 print("\nReset cancelled.\n")
 
@@ -130,3 +137,5 @@ def show_settings_menu() -> None:
 
         else:
             print("\n❌ Invalid choice.\n")
+
+        input("Press Enter to return to settings...")
