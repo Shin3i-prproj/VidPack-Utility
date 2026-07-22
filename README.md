@@ -65,7 +65,7 @@ VidPack Utility supports any video format that FFmpeg can read, including:
 
 ### Compression Progress
 
-![Compression Progress](assets/progress.png)
+![Progress](assets/progress.png)
 
 ---
 
