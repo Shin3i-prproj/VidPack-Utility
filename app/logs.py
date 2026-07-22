@@ -22,12 +22,17 @@ def save_compression_log(
     timestamp = datetime.now()
 
     log_filename = timestamp.strftime(
-        "%Y-%m-%d_%H-%M-%S.log"
+        "%Y-%m-%d_%H-%M-%S-%f.log"
     )
 
     log_path = logs_folder / log_filename
 
-    space_saved = original_size - compressed_size
+    size_difference = original_size - compressed_size
+
+    if size_difference >= 0:
+        difference_label = "Space Saved"
+    else:
+        difference_label = "Size Increase"
 
     log_content = f"""VidPack Compression Log
 =======================
@@ -50,8 +55,8 @@ Original Size:
 Compressed Size:
 {format_file_size(compressed_size)}
 
-Space Saved:
-{format_file_size(space_saved)}
+{difference_label}:
+{format_file_size(abs(size_difference))}
 
 Status:
 {status}
@@ -74,15 +79,17 @@ def format_file_size(size_bytes: int) -> str:
     Convert a file size in bytes into a readable value.
     """
 
-    size = float(size_bytes)
+    sign = "-" if size_bytes < 0 else ""
+    size = float(abs(size_bytes))
 
     for unit in ("B", "KB", "MB", "GB", "TB"):
         if size < 1024:
-            return f"{size:.2f} {unit}"
+            return f"{sign}{size:.2f} {unit}"
 
         size /= 1024
 
-    return f"{size:.2f} PB"
+    return f"{sign}{size:.2f} PB"
+
 
 def get_available_logs() -> list[Path]:
     """
@@ -100,6 +107,7 @@ def get_available_logs() -> list[Path]:
         key=lambda log: log.stat().st_mtime,
         reverse=True,
     )
+
 
 def display_available_logs(
     logs: list[Path],
@@ -126,6 +134,7 @@ def display_available_logs(
     print("[0] Back")
     print()
 
+
 def display_log_contents(
     log_path: Path,
 ) -> None:
@@ -150,6 +159,22 @@ def display_log_contents(
 
     print("=" * 60)
 
+
+def pause_for_logs() -> bool:
+    """
+    Pause before returning to the logs menu.
+
+    Return False if standard input is unavailable.
+    """
+
+    try:
+        input("Press Enter to continue...")
+        return True
+
+    except EOFError:
+        return False
+
+
 def view_logs() -> None:
     """
     Display and open compression logs.
@@ -172,6 +197,7 @@ def view_logs() -> None:
 
         try:
             choice = input("> ").strip()
+
         except EOFError:
             print("\nReturning to the previous menu...")
             return
@@ -181,17 +207,26 @@ def view_logs() -> None:
 
         if not choice.isdigit():
             print("\n❌ Invalid choice.\n")
+
+            if not pause_for_logs():
+                return
+
             continue
 
         index = int(choice) - 1
 
         if not (0 <= index < len(logs)):
             print("\n❌ Invalid choice.\n")
+
+            if not pause_for_logs():
+                return
+
             continue
 
         display_log_contents(logs[index])
 
         try:
             input("\nPress Enter to continue...")
+
         except EOFError:
             return
