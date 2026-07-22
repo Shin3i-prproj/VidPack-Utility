@@ -8,6 +8,7 @@ from app.compressor import (
     get_video_path,
     run_compression,
     select_compression_preset,
+    select_output_folder,
 )
 
 
@@ -48,9 +49,12 @@ def show_menu():
                         print(f"Speed  : {preset['speed']}")
                         print()
 
+                        output_folder = select_output_folder()
+
                         command, output_path = build_ffmpeg_command(
                             video,
                             preset,
+                            output_folder,
                         )
 
                         print("FFmpeg Command")

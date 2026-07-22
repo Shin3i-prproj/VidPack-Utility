@@ -2,6 +2,7 @@ import json
 import subprocess
 
 from json import JSONDecodeError
+from pathlib import Path
 
 from tkinter import Tk, filedialog
 
@@ -262,8 +263,15 @@ def get_available_output_path(
 
     return output_path
 
-def build_ffmpeg_command(input_path, preset):
-    output_path = get_available_output_path(input_path)
+def build_ffmpeg_command(
+    input_path: Path,
+    preset: dict,
+    output_folder: Path,
+):
+    output_path = get_available_output_path(
+        input_path,
+        output_folder,
+    )
 
     command = [
         "ffmpeg",
@@ -475,9 +483,12 @@ def compress_video(video: Path, preset: dict) -> bool:
         print(f"❌ Invalid duration ({duration}) for: {video.name}")
         return False
 
+    output_folder = select_output_folder()
+
     command, output_path = build_ffmpeg_command(
         video,
         preset,
+        output_folder,
     )
 
     config = load_config()
