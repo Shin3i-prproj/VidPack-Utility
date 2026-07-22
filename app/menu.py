@@ -13,6 +13,7 @@ from app.compressor import (
     select_compression_preset,
     select_output_folder,
     confirm_batch,
+    compress_video_batch,
 )
 
 
@@ -107,7 +108,13 @@ def show_menu():
                 display_found_videos(videos)
 
                 if videos and confirm_batch():
-                    print("\n✅ Batch confirmed!\n")
+                    preset = select_compression_preset()
+
+                    if preset:
+                        compress_video_batch(
+                            videos,
+                            preset,
+                        )
 
         elif choice == "3":
             print("\nSettings are coming soon!\n")
