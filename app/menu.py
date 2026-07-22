@@ -18,6 +18,7 @@ from app.compressor import (
 
 from app.config import show_settings_menu
 from app.logs import view_logs
+from app.about import show_about
 
 
 def show_menu():
@@ -129,9 +130,7 @@ def show_menu():
             print("\nVCompress")
             print("Fast • Clean • Powerful")
             print("Created by Shin & ChatGPT\n")
+            show_about()
 
         else:
             print("\nInvalid option.\n")
-
-        input("Press Enter to continue...")
-        os.system("cls")
