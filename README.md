@@ -7,17 +7,33 @@
 
 **Fast • Clean • Powerful**
 
-VidPack Utility is a lightweight command-line application that uses FFmpeg to compress videos while maintaining excellent visual quality.
+VidPack Utility is a lightweight command-line application powered by **FFmpeg** that compresses videos while maintaining excellent visual quality.
 
-Whether you need to reduce the size of a single video or compress an entire folder, VidPack Utility provides a simple, fast, and reliable workflow with live progress tracking and detailed compression logs.
+Whether you need to reduce the size of a single video or compress an entire folder, VidPack Utility provides a fast, simple, and reliable workflow with live progress tracking and detailed compression logs.
 
 ---
 
-## ✨ Features
+# 📥 Download
+
+Download the latest Windows release here:
+
+➡️ **https://github.com/Shin3i-prproj/VidPack-Utility/releases/latest**
+
+### Requirements
+
+- Windows 10/11
+- FFmpeg
+- FFprobe
+
+> **Note:** FFmpeg must currently be installed and available in your system PATH.
+
+---
+
+# ✨ Features
 
 - 📹 Single video compression
 - 📁 Batch folder compression
-- 📂 Automatically saves compressed videos to the output folder
+- 📂 Automatic output management
 - ⚡ Three compression presets
   - Light
   - Balanced
@@ -30,9 +46,32 @@ Whether you need to reduce the size of a single video or compress an entire fold
 
 ---
 
-## 🎞 Supported Formats
+# 📷 Preview
 
-VidPack Utility supports any video format that FFmpeg can read, including:
+### Main Menu
+
+![Main Menu](assets/main-menu.png)
+
+### Compression Progress
+
+![Compression Progress](assets/progress.png)
+
+---
+
+# 💡 Why VidPack Utility?
+
+- Lightweight and easy to use
+- Built with Python and FFmpeg
+- No unnecessary dependencies
+- Real-time compression progress
+- Clean command-line interface
+- Batch processing support
+
+---
+
+# 🎞 Supported Formats
+
+VidPack Utility supports any format FFmpeg can read, including:
 
 - MP4
 - MKV
@@ -46,43 +85,12 @@ VidPack Utility supports any video format that FFmpeg can read, including:
 
 ---
 
-## 💡 Why VidPack Utility?
-
-- Lightweight and easy to use
-- No unnecessary dependencies
-- Real-time compression progress
-- Clean command-line interface
-- Batch processing support
-- Built with Python and FFmpeg
-
----
-
-## 📷 Preview
-
-### Main Menu
-
-![Main Menu](assets/main-menu.png)
-
-### Compression Progress
-
-![Progress](assets/progress.png)
-
----
-
-## 📦 Requirements
-
-- Python 3.11+
-- FFmpeg
-- FFprobe
-
----
-
-## 🚀 Installation
+# 🚀 Installation
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/<your-username>/VidPack-Utility.git
+git clone https://github.com/Shin3i-prproj/VidPack-Utility.git
 cd VidPack-Utility
 ```
 
@@ -100,7 +108,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Run:
+Run the application:
 
 ```bash
 python launcher.py
@@ -108,7 +116,17 @@ python launcher.py
 
 ---
 
-## 🗂️ Project Structure
+# 🎯 Compression Presets
+
+| Preset | CRF | Speed |
+|---------|----:|--------|
+| Light | 23 | Fast |
+| Balanced | 28 | Medium |
+| Maximum | 32 | Slow |
+
+---
+
+# 🗂️ Project Structure
 
 ```text
 VidPack Utility
@@ -131,56 +149,53 @@ app/
 
 ---
 
-## 🎯 Compression Presets
-
-| Preset | CRF | Speed |
-|--------|----:|--------|
-| Light | 23 | fast |
-| Balanced | 28 | medium |
-| Maximum | 32 | slow |
-
----
-
-## ⚠ Known Limitations
+# ⚠ Known Limitations
 
 - Hardware acceleration is not yet supported.
+- FFmpeg must currently be installed separately.
 - Custom compression settings are planned for a future release.
-- GUI version is planned for v2.0.
+- A graphical user interface (GUI) is planned for v2.0.
 
 ---
 
-## 🚀 Roadmap
+# 🛣️ Roadmap
 
-### v1.1
+## v1.1
 
-- Custom CRF
-- Hardware acceleration (NVENC / AMF / Quick Sync)
-- Additional output formats
-- Better logging
+- Hardware acceleration (NVENC / Intel Quick Sync / AMD AMF)
+- Automatic FFmpeg detection or bundled FFmpeg
+- Better compression logs
+- Custom CRF selection
 
-### v1.2
+## v1.2
 
 - Custom presets
+- Compression preview
+- Additional output formats
+- Audio bitrate selection
 - Recursive folder scanning
-- Audio bitrate options
 
-### v2.0
+## v1.3
+
+- Drag-and-drop support
+- Queue management
+
+## v2.0
 
 - Graphical User Interface (GUI)
-- Drag-and-drop support
-- User-defined presets
 - Theme support
+- User-defined presets
 
 ---
 
-## 📄 License
+# 📄 License
 
-MIT License
-
----
-
-## 👤 Author
-
-Shin
+This project is licensed under the **MIT License**.
 
 ---
+
+# 👤 Author
+
+**Shin**
+
+If you found this project useful, consider ⭐ starring the repository.
