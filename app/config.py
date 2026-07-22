@@ -49,4 +49,70 @@ def save_config(config: dict) -> bool:
     except OSError:
         return False
         
-    
+def show_settings_menu() -> None:
+    """
+    Display and manage VidPack configuration settings.
+    """
+
+    while True:
+        config = load_config()
+
+        last_preset = config.get(
+            "last_preset",
+            "Not set",
+        )
+
+        last_output_folder = config.get(
+            "last_output_folder",
+            "Not set",
+        )
+
+        print()
+        print("Settings")
+        print("========")
+        print(f"Last preset        : {last_preset}")
+        print(f"Last output folder : {last_output_folder}")
+        print()
+        print("[1] Clear remembered preset")
+        print("[2] Clear remembered output folder")
+        print("[3] Reset all settings")
+        print("[0] Back")
+        print()
+
+        choice = input("> ").strip()
+
+        if choice == "1":
+            config.pop("last_preset", None)
+
+            if save_config(config):
+                print("\n✅ Remembered preset cleared.\n")
+            else:
+                print("\n❌ Unable to save settings.\n")
+
+        elif choice == "2":
+            config.pop("last_output_folder", None)
+
+            if save_config(config):
+                print("\n✅ Remembered output folder cleared.\n")
+            else:
+                print("\n❌ Unable to save settings.\n")
+
+        elif choice == "3":
+            confirm = input(
+                "Reset all settings? (Y/N): "
+            ).strip().lower()
+
+            if confirm in ("y", "yes"):
+                if save_config({}):
+                    print("\n✅ All settings reset.\n")
+                else:
+                    print("\n❌ Unable to reset settings.\n")
+
+            else:
+                print("\nReset cancelled.\n")
+
+        elif choice == "0":
+            return
+
+        else:
+            print("\n❌ Invalid choice.\n")

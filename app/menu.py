@@ -16,6 +16,8 @@ from app.compressor import (
     compress_video_batch,
 )
 
+from app.config import show_settings_menu
+
 
 def show_menu():
     while True:
@@ -117,7 +119,7 @@ def show_menu():
                         )
 
         elif choice == "3":
-            print("\nSettings are coming soon!\n")
+            show_settings_menu()
 
         elif choice == "4":
             print("\nLogs are coming soon!\n")
