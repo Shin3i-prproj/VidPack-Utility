@@ -17,6 +17,7 @@ from app.compressor import (
 )
 
 from app.config import show_settings_menu
+from app.logs import view_logs
 
 
 def show_menu():
@@ -122,7 +123,7 @@ def show_menu():
             show_settings_menu()
 
         elif choice == "4":
-            print("\nLogs are coming soon!\n")
+            view_logs()
 
         elif choice == "5":
             print("\nVCompress")
