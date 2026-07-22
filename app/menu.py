@@ -5,10 +5,14 @@ from app.compressor import (
     display_compression_results,
     confirm_video,
     display_video_info,
+    get_folder_path,
     get_video_path,
+    get_videos_from_folder,
+    display_found_videos,
     run_compression,
     select_compression_preset,
     select_output_folder,
+    confirm_batch,
 )
 
 
@@ -95,7 +99,15 @@ def show_menu():
             print()
 
         elif choice == "2":
-            print("\nBatch Compression is coming soon!\n")
+            folder = get_folder_path()
+
+            if folder:
+                videos = get_videos_from_folder(folder)
+
+                display_found_videos(videos)
+
+                if videos and confirm_batch():
+                    print("\n✅ Batch confirmed!\n")
 
         elif choice == "3":
             print("\nSettings are coming soon!\n")

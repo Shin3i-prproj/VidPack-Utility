@@ -85,6 +85,46 @@ def get_videos_from_folder(folder: Path) -> list[Path]:
 
     return sorted(videos)
 
+def display_found_videos(videos: list[Path]) -> None:
+    """
+    Display all videos found in the selected folder.
+    """
+
+    print()
+    print("Videos Found")
+    print("------------")
+
+    if not videos:
+        print("No supported videos were found.")
+        print()
+        return
+
+    for index, video in enumerate(videos, start=1):
+        print(f"{index}. {video.name}")
+
+    print()
+    print(f"Total videos: {len(videos)}")
+    print()
+
+def confirm_batch() -> bool:
+    """
+    Ask the user whether to continue with batch compression.
+    """
+
+    while True:
+        choice = input(
+            "Continue with batch compression? (Y/N): "
+        ).strip().lower()
+
+        if choice in ("y", "yes"):
+            return True
+
+        if choice in ("n", "no"):
+            print("\nBatch compression cancelled.\n")
+            return False
+
+        print("Please enter Y or N.")
+
 
 def get_video_info(path: Path) -> dict:
     """
