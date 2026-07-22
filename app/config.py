@@ -33,8 +33,6 @@ def save_config(config: dict) -> bool:
     Save the application configuration to config.json.
     """
 
-    print(f"\nSaving config to:\n{CONFIG_PATH}\n")
-
     try:
         with CONFIG_PATH.open(
             "w",
@@ -70,7 +68,7 @@ def show_settings_menu() -> None:
 
     while True:
         clear_screen()
-        
+
         config = load_config()
 
         last_preset = config.get(

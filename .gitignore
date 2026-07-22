@@ -1,2 +1,36 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Build files
+build/
+dist/
+
+# PyInstaller
+*.spec
+
+# Logs
+logs/
+
+# Output videos
+output/
+
+# Configuration
+config.json
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db

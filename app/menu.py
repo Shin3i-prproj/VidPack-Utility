@@ -1,31 +1,28 @@
-import os
-
+from app.about import show_about
 from app.compressor import (
-    build_ffmpeg_command,
-    display_compression_results,
+    compress_video,
+    compress_video_batch,
+    confirm_batch,
     confirm_video,
+    display_found_videos,
     display_video_info,
     get_folder_path,
     get_video_path,
     get_videos_from_folder,
-    display_found_videos,
-    run_compression,
     select_compression_preset,
-    select_output_folder,
-    confirm_batch,
-    compress_video_batch,
 )
-
 from app.config import show_settings_menu
 from app.logs import view_logs
-from app.about import show_about
 from app.utils import clear_screen
 
 
-def show_menu():
+def show_menu(show_banner) -> None:
+    """Display and manage the main application menu."""
+
     while True:
         clear_screen()
-        
+        show_banner()
+
         print("─" * 60)
         print("[1] Compress a Video")
         print("[2] Batch Compress Folder")
@@ -39,89 +36,73 @@ def show_menu():
         choice = input("Select an option: ").strip()
 
         if choice == "0":
-            print("\nThank you for using VCompress!\n")
+            print("\nThank you for using VidPack Utility!\n")
             break
 
         elif choice == "1":
             print()
+
             video = get_video_path()
 
-            if video:
-                video_info = display_video_info(video)
+            if not video:
+                input("\nPress Enter to return to the main menu...")
+                continue
 
-                if confirm_video():
-                    preset = select_compression_preset()
+            display_video_info(video)
 
-                    if preset:
-                        print()
-                        print("Compression Settings")
-                        print("--------------------")
-                        print(f"Preset : {preset['name']}")
-                        print(f"CRF    : {preset['crf']}")
-                        print(f"Speed  : {preset['speed']}")
-                        print()
+            if not confirm_video():
+                print("\nCompression cancelled.\n")
+                input("Press Enter to return to the main menu...")
+                continue
 
-                        output_folder = select_output_folder()
+            preset = select_compression_preset()
 
-                        command, output_path = build_ffmpeg_command(
-                            video,
-                            preset,
-                            output_folder,
-                        )
+            if not preset:
+                print("\nCompression cancelled.\n")
+                input("Press Enter to return to the main menu...")
+                continue
 
-                        print("FFmpeg Command")
-                        print("--------------")
-                        print(" ".join(command))
-                        print()
-                        print(f"Output file: {output_path}")
-                        print()
+            compress_video(
+                video,
+                preset,
+            )
 
-                        duration = float(video_info["format"]["duration"])
-
-                        compression_successful = run_compression(
-                            command,
-                            duration,
-                        )
-
-                        if compression_successful:
-                            print()
-                            print("Compression completed successfully.")
-                            print(f"Saved to: {output_path}")
-
-                            display_compression_results(
-                                video,
-                                output_path,
-                                preset,
-                            )
-
-                            print()
-                        else:
-                            print()
-                            print("Compression was not completed.")
-                            print()
-                    else:
-                        print("\nCompression cancelled.\n")
-                else:
-                    print("\nCompression cancelled.\n")
-
-            print()
+            input("\nPress Enter to return to the main menu...")
 
         elif choice == "2":
+            print()
+
             folder = get_folder_path()
 
-            if folder:
-                videos = get_videos_from_folder(folder)
+            if not folder:
+                input("\nPress Enter to return to the main menu...")
+                continue
 
-                display_found_videos(videos)
+            videos = get_videos_from_folder(folder)
+            display_found_videos(videos)
 
-                if videos and confirm_batch():
-                    preset = select_compression_preset()
+            if not videos:
+                input("\nPress Enter to return to the main menu...")
+                continue
 
-                    if preset:
-                        compress_video_batch(
-                            videos,
-                            preset,
-                        )
+            if not confirm_batch():
+                print("\nBatch compression cancelled.\n")
+                input("\nPress Enter to return to the main menu...")
+                continue
+
+            preset = select_compression_preset()
+
+            if not preset:
+                print("\nBatch compression cancelled.\n")
+                input("Press Enter to return to the main menu...")
+                continue
+
+            compress_video_batch(
+                videos,
+                preset,
+            )
+
+            input("\nPress Enter to return to the main menu...")
 
         elif choice == "3":
             show_settings_menu()
@@ -130,10 +111,8 @@ def show_menu():
             view_logs()
 
         elif choice == "5":
-            print("\nVCompress")
-            print("Fast • Clean • Powerful")
-            print("Created by Shin & ChatGPT\n")
             show_about()
 
         else:
-            print("\nInvalid option.\n")
+            print("\nInvalid option.")
+            input("\nPress Enter to return to the main menu...")

@@ -25,7 +25,7 @@ SUPPORTED_VIDEO_EXTENSIONS = {
 }
 
 
-def get_video_path():
+def get_video_path() -> Path | None:
     print()
     print("Enter the video path")
     print("(You can also drag and drop a file here.)")
@@ -122,7 +122,6 @@ def confirm_batch() -> bool:
             return True
 
         if choice in ("n", "no"):
-            print("\nBatch compression cancelled.\n")
             return False
 
         print("Please enter Y or N.")
@@ -160,7 +159,7 @@ def get_video_info(path: Path) -> dict:
         ) from error
 
 
-def display_video_info(path):
+def display_video_info(path: Path) -> dict:
     info = get_video_info(path)
 
     format_info = info["format"]
@@ -192,7 +191,7 @@ def display_video_info(path):
     return info
 
 
-def confirm_video():
+def confirm_video() -> bool:
     print()
     print("[1] Continue")
     print("[0] Cancel")
@@ -352,7 +351,8 @@ def build_ffmpeg_command(
     input_path: Path,
     preset: dict,
     output_folder: Path,
-):
+) -> tuple[list[str], Path]:
+
     output_path = get_available_output_path(
         input_path,
         output_folder,
@@ -423,12 +423,12 @@ def display_compression_results(
     else:
         reduction_percentage = 0
 
-    log_path = save_compression_log(
-    input_path=input_path,
-    output_path=output_path,
-    preset_name=preset["name"],
-    original_size=original_size,
-    compressed_size=output_size,
+    save_compression_log(
+        input_path=input_path,
+        output_path=output_path,
+        preset_name=preset["name"],
+        original_size=original_size,
+        compressed_size=output_size,
     )
 
     print()
@@ -444,31 +444,6 @@ def display_compression_results(
     else:
         print(f"Size increase : {abs(saved_size_mb):.2f} MB")
         print(f"Increase      : {abs(reduction_percentage):.2f}%")
-
-    print("─" * 60)
-
-def find_videos_in_folder(folder_path):
-    videos = []
-
-    for item in folder_path.iterdir():
-        if (
-            item.is_file()
-            and item.suffix.lower() in SUPPORTED_VIDEO_EXTENSIONS
-        ):
-            videos.append(item)
-
-    return sorted(
-        videos,
-        key=lambda video: video.name.lower(),
-    )
-
-def display_video_list(videos):
-    print()
-    print(f"Found {len(videos)} video(s):")
-    print("─" * 60)
-
-    for index, video in enumerate(videos, start=1):
-        print(f"{index}. {video.name}")
 
     print("─" * 60)
 
@@ -592,18 +567,7 @@ def compress_video(
 
     config = load_config()
     config["last_preset"] = preset["name"]
-
-    saved = save_config(config)
-    reloaded_config = load_config()
-
-    print()
-    print("========== PRESET CONFIG DEBUG ==========")
-    print(f"Compressor file : {Path(__file__).resolve()}")
-    print(f"Preset received : {preset}")
-    print(f"Save successful : {saved}")
-    print(f"Reloaded config : {reloaded_config}")
-    print("=========================================")
-    print()
+    save_config(config)
 
     try:
         success = run_compression(
@@ -661,18 +625,3 @@ def compress_video_batch(
     print(f"Failed       : {failed}")
     print(f"Output folder: {output_folder}")
     print("─" * 60)
-
-def select_folder():
-    root = Tk()
-    root.withdraw()
-
-    folder = filedialog.askdirectory(
-        title="Select a folder containing videos"
-    )
-
-    root.destroy()
-
-    if not folder:
-        return None
-
-    return Path(folder)
