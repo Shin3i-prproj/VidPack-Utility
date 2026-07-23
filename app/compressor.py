@@ -131,6 +131,7 @@ def get_video_info(path: Path) -> dict:
     """
     Retrieve video metadata using FFprobe.
     """
+
     command = [
         "ffprobe",
         "-v",
@@ -142,21 +143,46 @@ def get_video_info(path: Path) -> dict:
         str(path),
     ]
 
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    except FileNotFoundError as error:
+        raise FFprobeError(
+            "FFprobe was not found. Make sure FFmpeg is installed and added to PATH."
+        ) from error
 
     if result.returncode != 0:
-        raise FFprobeError(result.stderr.strip())
+        error_message = (result.stderr or "").strip()
+
+        raise FFprobeError(
+            error_message or f"FFprobe failed with exit code {result.returncode}."
+        )
+
+    output = result.stdout
+
+    if not output or not output.strip():
+        raise FFprobeError(
+            "FFprobe returned no video information."
+        )
 
     try:
-        return json.loads(result.stdout)
-    except JSONDecodeError as error:
+        video_info = json.loads(output)
+    except (JSONDecodeError, TypeError) as error:
         raise FFprobeError(
-            "FFprobe returned invalid data."
+            "FFprobe returned invalid video information."
         ) from error
+
+    if not isinstance(video_info, dict):
+        raise FFprobeError(
+            "FFprobe returned an unexpected data format."
+        )
+
+    return video_info
 
 
 def display_video_info(path: Path) -> dict:
